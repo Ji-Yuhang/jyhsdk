@@ -1,5 +1,6 @@
 # C++ objects and libs
 
+cpp/include/
 *.slo
 *.lo
 *.o
