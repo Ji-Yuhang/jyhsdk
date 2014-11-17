@@ -60,7 +60,13 @@ void Log::append(const LogData &data)
 {
     QString content;
     QTextStream in(&content);
-    in << data;
+    
+    QString color;
+    if (data.level == "ERROR" || data.level == "FATAL" )
+        color = "\033[31m";
+    else if (data.level == "INFO" || data.level == "LOG")
+        color = "\033[32m";
+        in << data.time <<" "<< color << data.level <<" \033[0m" << "\033[7m" << data.text <<" \033[0m" << data.file  <<" "<< data.line <<" ";
     
     qDebug() << content.toStdString().c_str();
     
@@ -72,7 +78,7 @@ void Log::setLogFile(const QString &path)
     logPath_ = path;
 }
 
-void Log::setDataBaseCallBack(const boost::function<void (const LogData &)> &databaseCallBack)
+void Log::setDataBaseCallBack(const boost::function<bool (const LogData &)> &databaseCallBack)
 {
     databaseCallBack_ = databaseCallBack;
 }
@@ -88,8 +94,12 @@ void Log::onTimeout()
     while (!logs_.empty()) {
         LogData data = logs_.dequeue();
         in << data <<"\r"<< endl;
-        if (databaseCallBack_)
-            databaseCallBack_(data);
+        if (databaseCallBack_) {
+            if (!databaseCallBack_(data)) {
+                qDebug("can not writelog to database");
+            }
+
+        }
     }
     QFile file;
     if (!logPath_.isEmpty()) {
