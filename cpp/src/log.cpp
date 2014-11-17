@@ -8,6 +8,7 @@ static QTextStream & operator <<(QTextStream &ss, const LogData& data)
     ss << data.time <<" "<< data.level <<" " << data.text <<" " << data.file  <<" "<< data.line <<" ";
     return ss;
 }
+
 static QTextStream & operator >> (QTextStream &ss, LogData& data)
 {
     QString time, level, text, file;
@@ -66,7 +67,9 @@ void Log::append(const LogData &data)
         color = "\033[31m";
     else if (data.level == "INFO" || data.level == "LOG")
         color = "\033[32m";
-        in << data.time <<" "<< color << data.level <<" \033[0m" << "\033[7m" << data.text <<" \033[0m" << data.file  <<" "<< data.line <<" ";
+    else if (data.level == "WARN" || data.level == "DEBUG")
+        color = "\033[33m";
+    in << data.time <<" "<< color <<data.level <<"\t\033[0m" << "\033[7m" << data.text <<" \033[0m" << data.file  <<" "<< data.line <<" ";
     
     qDebug() << content.toStdString().c_str();
     

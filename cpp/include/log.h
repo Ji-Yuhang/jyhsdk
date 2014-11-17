@@ -69,7 +69,14 @@ inline static QTextStream & operator <<(QTextStream &ss, const std::string & s)
     ss << QString::fromStdString(s);
     return ss;
 }
-
+inline static QTextStream & operator <<(QTextStream &ss, bool b)
+{
+    if (b)
+        ss << "true";
+    else
+        ss << "false";
+    return ss;
+}
 
 template<class T>
 static QTextStream & operator <<(QTextStream &ss, const QList<T>& list)
